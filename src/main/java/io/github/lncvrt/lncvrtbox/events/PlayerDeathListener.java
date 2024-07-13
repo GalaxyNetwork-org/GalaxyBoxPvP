@@ -12,6 +12,6 @@ public class PlayerDeathListener implements Listener {
         String suicideMsg = "";
         if (event.getEntity() == event.getEntity().getKiller()) suicideMsg = "%s (suicide)".formatted(RESET);
 
-        event.setDeathMessage("%s%sLncvrtBox %s%s» %s%s%s".formatted(GOLD, BOLD, GRAY, BOLD, WHITE, event.getDeathMessage(), suicideMsg));
+        event.setDeathMessage("%s%sLncvrtBox %s%s» %s%s%s".formatted(GOLD, BOLD, GRAY, BOLD, RESET, event.getDeathMessage(), suicideMsg));
     }
 }

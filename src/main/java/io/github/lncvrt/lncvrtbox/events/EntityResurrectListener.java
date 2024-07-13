@@ -20,7 +20,7 @@ public class EntityResurrectListener implements Listener {
     public void onEntityResurrect(EntityResurrectEvent event) {
         if (event.getEntity() instanceof Player player && !event.isCancelled()) {
             if (player.getInventory().getItemInMainHand().getType() == Material.TOTEM_OF_UNDYING || player.getInventory().getItemInOffHand().getType() == Material.TOTEM_OF_UNDYING) {
-                plugin.getServer().broadcastMessage("%s%sLncvrtBox %s%s» %s%s has popped their totem".formatted(GOLD, BOLD, GRAY, BOLD, WHITE, player.getName()));
+                plugin.getServer().broadcastMessage("%s%sLncvrtBox %s%s» %s%s has popped their totem".formatted(GOLD, BOLD, GRAY, BOLD, RESET, player.getName()));
             }
         }
     }

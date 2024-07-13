@@ -5,15 +5,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import static org.bukkit.ChatColor.*;
-import static org.bukkit.ChatColor.RESET;
 
 public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         String suicideMsg = "";
-        if (event.getEntity() == event.getEntity().getKiller()) suicideMsg = RESET + " (suicide)";
+        if (event.getEntity() == event.getEntity().getKiller()) suicideMsg = "%s (suicide)".formatted(RESET);
 
-        event.setDeathMessage("%s%sLncvrtBoxFFA %s%s» %s%s%s".formatted(GOLD, BOLD, GRAY, BOLD, RESET, event.getDeathMessage(), suicideMsg));
+        event.setDeathMessage("%s%sLncvrtBoxFFA %s%s» %s%s%s".formatted(GOLD, BOLD, GRAY, BOLD, WHITE, event.getDeathMessage(), suicideMsg));
         //Bukkit.getServer().broadcastMessage(event.getEntity().getKiller().getName());
     }
 }

@@ -25,6 +25,10 @@ public class EntityDamageListener implements Listener {
                     if (damageEvent.getDamager() instanceof Player attacker) {
                         attacker.sendMessage("%s%sLncvrtBox %s%s» %sYou can't attack AFK players!".formatted(GOLD, BOLD, GRAY, BOLD, RESET));
                         player.sendMessage("%s%sLncvrtBox %s%s» %s%s tried to attack you while you were AFK!".formatted(GOLD, BOLD, GRAY, BOLD, RESET, attacker.getName()));
+                        if (attacker.getNoDamageTicks() == 0) {
+                            attacker.damage(0.0001);
+                            attacker.setVelocity(attacker.getLocation().toVector().subtract(player.getLocation().toVector()).normalize().setY(0.5).multiply(0.5));
+                        }
                     }
                 }
             }

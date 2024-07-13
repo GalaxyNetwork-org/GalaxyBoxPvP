@@ -34,3 +34,7 @@ commands:
   lockchat:
     description: Lockchat
     usage: /lockchat
+  fix:
+    description: fix
+    permission: lncvrtbox.admin
+    usage: /fix

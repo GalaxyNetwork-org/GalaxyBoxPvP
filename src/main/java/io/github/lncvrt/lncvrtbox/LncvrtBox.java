@@ -28,10 +28,8 @@ import org.json.simple.parser.ParseException;
 import org.bukkit.inventory.ItemStack;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.bukkit.BukkitPlayer;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.world.block.BlockTypes;
 
 import org.bukkit.Bukkit;
 

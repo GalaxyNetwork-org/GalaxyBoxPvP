@@ -1,6 +1,7 @@
 package io.github.lncvrt.lncvrtbox.events;
 
 import io.github.lncvrt.lncvrtbox.LncvrtBox;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -32,6 +33,10 @@ public class EntityDamageListener implements Listener {
                     }
                 }
             }
+        }
+        if (event.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION) {
+            double damage = event.getDamage();
+            event.setDamage(damage * 0.4);
         }
     }
 }

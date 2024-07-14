@@ -24,7 +24,7 @@ public class EntityResurrectListener implements Listener {
                     event.setCancelled(true);
                     return;
                 }
-                player.setCooldown(Material.TOTEM_OF_UNDYING, 20 * 8);
+                player.setCooldown(Material.TOTEM_OF_UNDYING, 20 * 5);
                 plugin.getServer().broadcastMessage("%s%sLncvrtBox %s%s» %s%s has popped their totem".formatted(GOLD, BOLD, GRAY, BOLD, RESET, player.getName()));
             }
         }

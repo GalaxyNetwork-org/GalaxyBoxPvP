@@ -8,20 +8,34 @@ import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.world.block.BlockState;
+import io.github.lncvrt.lncvrtbox.LncvrtBox;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class Fix implements CommandExecutor {
+    private final LncvrtBox plugin;
+
+    public Fix(LncvrtBox plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         //TODO: make selectionwall4 (front wall)
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        if (plugin.fixRanTooOften) {
+            sender.sendMessage("/fix was ran within the past 5 seconds!");
+            return true;
+        }
+        plugin.fixRanTooOften = true;
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> plugin.fixRanTooOften = false, 20 * 5);
+
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Objects.requireNonNull(Bukkit.getWorld("world")));
         CuboidRegion selectionground1 = new CuboidRegion(world, BlockVector3.at(131, 100, 105), BlockVector3.at(-67, 100, -123));
         CuboidRegion selectionwall1 = new CuboidRegion(world, BlockVector3.at(-66, 139, 105), BlockVector3.at(130, 101, 105));
         CuboidRegion selectionwall2 = new CuboidRegion(world, BlockVector3.at(-67, 139, 104), BlockVector3.at(-67, 101, -122));

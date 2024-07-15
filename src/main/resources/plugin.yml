@@ -4,8 +4,9 @@ main: io.github.lncvrt.lncvrtbox.LncvrtBox
 api-version: '1.20'
 depend:
   - PlaceholderAPI
-  - LuckPerms
   - Essentials
+  - WorldEdit
+  - WorldGuard
 commands:
   autocompress:
     description: Auto compressor

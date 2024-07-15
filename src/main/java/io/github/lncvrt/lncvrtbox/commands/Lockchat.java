@@ -6,9 +6,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import static org.bukkit.ChatColor.RED;
-import static org.bukkit.ChatColor.translateAlternateColorCodes;
-
 public record Lockchat(LncvrtBox plugin) implements CommandExecutor {
 
     @Override

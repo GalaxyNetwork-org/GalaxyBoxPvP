@@ -3,12 +3,6 @@ package io.github.lncvrt.lncvrtbox;
 import com.earth2me.essentials.Essentials;
 import io.github.lncvrt.lncvrtbox.commands.*;
 import io.github.lncvrt.lncvrtbox.events.*;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.model.user.User;
-import net.luckperms.api.node.Node;
-import net.luckperms.api.node.NodeType;
-import net.luckperms.api.node.types.SuffixNode;
 import org.bukkit.*;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
@@ -29,24 +23,16 @@ import java.util.logging.Level;
 
 public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor {
 
-    private LuckPerms luckPerms;
     public final Map<UUID, Boolean> autoCompressStatus = new HashMap<>();
     public String serverRules;
     public boolean chatLocked = false;
     private Essentials essentials;
+    public boolean fixRanTooOften = false;
 
     @Override
     public void onEnable() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
             getLogger().warning("PlaceholderAPI not found. Disabling plugin.");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-        if (Bukkit.getPluginManager().getPlugin("LuckPerms") != null) {
-            luckPerms = LuckPermsProvider.get();
-            getLogger().info("LuckPerms detected and hooked.");
-        } else {
-            getLogger().warning("LuckPerms not found. Disabling plugin.");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -112,7 +98,7 @@ public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor
         loadServerRules();
         Objects.requireNonNull(getCommand("autocompress")).setExecutor(new Autocompress(this));
         Objects.requireNonNull(getCommand("clearchat")).setExecutor(new Clearchat());
-        Objects.requireNonNull(getCommand("fix")).setExecutor(new Fix());
+        Objects.requireNonNull(getCommand("fix")).setExecutor(new Fix(this));
         Objects.requireNonNull(getCommand("link")).setExecutor(new Link());
         Objects.requireNonNull(getCommand("lockchat")).setExecutor(new Lockchat(this));
         Objects.requireNonNull(getCommand("rules")).setExecutor(new Rules(this));
@@ -263,23 +249,5 @@ public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor
     public boolean isMuted(Player player) {
         com.earth2me.essentials.User user = essentials.getUser(player);
         return user.isMuted();
-    }
-
-    private void setSuffix(Player player, String suffix) {
-        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-        if (user != null) {
-            Node suffixNode = SuffixNode.builder(" " + suffix, 1).build();
-            user.data().clear(NodeType.SUFFIX::matches);
-            user.data().add(suffixNode);
-            luckPerms.getUserManager().saveUser(user);
-        }
-    }
-
-    private void removeSuffix(Player player) {
-        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
-        if (user != null) {
-            user.data().clear(NodeType.SUFFIX::matches);
-            luckPerms.getUserManager().saveUser(user);
-        }
     }
 }

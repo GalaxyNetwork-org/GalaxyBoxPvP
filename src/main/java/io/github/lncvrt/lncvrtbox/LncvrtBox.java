@@ -1,10 +1,7 @@
 package io.github.lncvrt.lncvrtbox;
 
 import com.earth2me.essentials.Essentials;
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
-import com.sk89q.worldedit.function.pattern.RandomPattern;
-import com.sk89q.worldedit.world.block.BlockState;
+import io.github.lncvrt.lncvrtbox.commands.*;
 import io.github.lncvrt.lncvrtbox.events.*;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -13,24 +10,16 @@ import net.luckperms.api.node.Node;
 import net.luckperms.api.node.NodeType;
 import net.luckperms.api.node.types.SuffixNode;
 import org.bukkit.*;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.bukkit.inventory.ItemStack;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.regions.CuboidRegion;
 
 import org.bukkit.Bukkit;
 
@@ -38,14 +27,11 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 
-import static org.bukkit.ChatColor.*;
-import static org.bukkit.ChatColor.translateAlternateColorCodes;
-
 public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor {
 
     private LuckPerms luckPerms;
     public final Map<UUID, Boolean> autoCompressStatus = new HashMap<>();
-    private String serverRules;
+    public String serverRules;
     public boolean chatLocked = false;
     private Essentials essentials;
 
@@ -124,13 +110,14 @@ public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor
 
         loadAutoCompressStatus();
         loadServerRules();
-        Objects.requireNonNull(getCommand("autocompress")).setExecutor(this);
-        Objects.requireNonNull(getCommand("sky")).setExecutor(this);
-        Objects.requireNonNull(getCommand("rules")).setExecutor(this);
-        Objects.requireNonNull(getCommand("link")).setExecutor(this);
-        Objects.requireNonNull(getCommand("unlink")).setExecutor(this);
-        Objects.requireNonNull(getCommand("clearchat")).setExecutor(this);
-        Objects.requireNonNull(getCommand("settag")).setExecutor(this);
+        Objects.requireNonNull(getCommand("autocompress")).setExecutor(new Autocompress(this));
+        Objects.requireNonNull(getCommand("clearchat")).setExecutor(new Clearchat());
+        Objects.requireNonNull(getCommand("fix")).setExecutor(new Fix());
+        Objects.requireNonNull(getCommand("link")).setExecutor(new Link());
+        Objects.requireNonNull(getCommand("lockchat")).setExecutor(new Lockchat(this));
+        Objects.requireNonNull(getCommand("rules")).setExecutor(new Rules(this));
+        Objects.requireNonNull(getCommand("sky")).setExecutor(new Sky());
+        Objects.requireNonNull(getCommand("Unlink")).setExecutor(new Unlink());
     }
 
     @Override
@@ -266,137 +253,6 @@ public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor
         } catch (IOException | ParseException e) {
             getLogger().log(Level.SEVERE, "Error loading statuses from autocompress.json", e);
         }
-    }
-
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, String label, String[] args) {
-        if (label.equalsIgnoreCase("autocompress")) {
-            if (!(sender instanceof Player player)) {
-                sender.sendMessage(RED + "This command can only be executed by a player.");
-                return true;
-            }
-
-            UUID playerId = player.getUniqueId();
-
-            boolean currentStatus = autoCompressStatus.getOrDefault(playerId, false);
-            autoCompressStatus.put(playerId, !currentStatus);
-
-            if (!currentStatus) {
-                player.sendMessage(GREEN + "Auto-compress enabled.");
-            } else {
-                player.sendMessage(RED + "Auto-compress disabled.");
-            }
-            return true;
-        } else if (label.equalsIgnoreCase("sky")) {
-            if (sender instanceof Player player) {
-                player.performCommand("warp sky");
-            }
-            return true;
-        } else if (label.equalsIgnoreCase("rules")) {
-            if (serverRules != null && !serverRules.isEmpty()) {
-                sender.sendMessage(translateAlternateColorCodes('&', serverRules));
-            } else {
-                sender.sendMessage("%sServer rules are currently unavailable.".formatted(RED));
-            }
-            return true;
-        } else if (label.equalsIgnoreCase("link")) {
-            if (sender instanceof Player player) {
-                player.performCommand("discord link");
-            }
-            return true;
-        } else if (label.equalsIgnoreCase("unlink")) {
-            if (sender instanceof Player player) {
-                player.performCommand("discord unlink");
-            }
-            return true;
-        } else if (label.equalsIgnoreCase("clearchat")) {
-            if (sender instanceof Player player) {
-                if (!player.hasPermission("lncvrtbox.clearchat")) {
-                    player.sendMessage("%sYou do not have permission to use this command.".formatted(RED));
-                    return true;
-                }
-            }
-
-            for (int i = 0; i < 1000; i++) {
-                Bukkit.broadcastMessage("");
-            }
-            return true;
-        } else if (label.equalsIgnoreCase("settag")) {
-            sender.sendMessage(RED + "Setting tags has been removed. Sorry!");
-            return true;
-        } else if (label.equalsIgnoreCase("lockchat")) {
-            if (sender.hasPermission("chatlock.lock")) {
-                chatLocked = !chatLocked;
-                sender.sendMessage("Chat " + (chatLocked ? "locked." : "unlocked."));
-            } else {
-                sender.sendMessage("You do not have permission to use this command.");
-            }
-            return true;
-        } else if (label.equalsIgnoreCase("fix")) {
-            //TODO: make selectionwall4 (front wall)
-            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-            CuboidRegion selectionground1 = new CuboidRegion(world, BlockVector3.at(131, 100, 105), BlockVector3.at(-67, 100, -123));
-            CuboidRegion selectionwall1 = new CuboidRegion(world, BlockVector3.at(-66, 139, 105), BlockVector3.at(130, 101, 105));
-            CuboidRegion selectionwall2 = new CuboidRegion(world, BlockVector3.at(-67, 139, 104), BlockVector3.at(-67, 101, -122));
-            CuboidRegion selectionwall3 = new CuboidRegion(world, BlockVector3.at(-67, 139, -123), BlockVector3.at(130, 101, -123));
-
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState deepslate_tiles = BukkitAdapter.adapt(Material.DEEPSLATE_TILES.createBlockData());
-                BlockState deepslate_bricks = BukkitAdapter.adapt(Material.DEEPSLATE_BRICKS.createBlockData());
-                pat.add(deepslate_tiles, 0.5);
-                pat.add(deepslate_bricks, 0.5);
-
-                editSession.setBlocks(selectionground1, pat);
-            } catch (MaxChangedBlocksException ex) {
-                ex.printStackTrace();
-            }
-
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState gold_block = BukkitAdapter.adapt(Material.GOLD_BLOCK.createBlockData());
-                BlockState raw_gold_block = BukkitAdapter.adapt(Material.RAW_GOLD_BLOCK.createBlockData());
-                BlockState yellow_concrete = BukkitAdapter.adapt(Material.YELLOW_CONCRETE.createBlockData());
-                pat.add(gold_block, 0.33333333333);
-                pat.add(raw_gold_block, 0.33333333333);
-                pat.add(yellow_concrete, 0.33333333333);
-
-                editSession.setBlocks(selectionwall1, pat);
-            } catch (MaxChangedBlocksException ex) {
-                ex.printStackTrace();
-            }
-
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState lapis_block = BukkitAdapter.adapt(Material.LAPIS_BLOCK.createBlockData());
-                BlockState blue_concrete_powder = BukkitAdapter.adapt(Material.BLUE_CONCRETE_POWDER.createBlockData());
-                BlockState blue_concrete = BukkitAdapter.adapt(Material.BLUE_CONCRETE.createBlockData());
-                pat.add(lapis_block, 0.33333333333);
-                pat.add(blue_concrete_powder, 0.33333333333);
-                pat.add(blue_concrete, 0.33333333333);
-
-                editSession.setBlocks(selectionwall2, pat);
-            } catch (MaxChangedBlocksException ex) {
-                ex.printStackTrace();
-            }
-
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState lime_concrete = BukkitAdapter.adapt(Material.LIME_CONCRETE.createBlockData());
-                BlockState melon = BukkitAdapter.adapt(Material.MELON.createBlockData());
-                BlockState green_glazed_terracotta = BukkitAdapter.adapt(Material.GREEN_GLAZED_TERRACOTTA.createBlockData());
-                pat.add(lime_concrete, 0.33333333333);
-                pat.add(melon, 0.33333333333);
-                pat.add(green_glazed_terracotta, 0.33333333333);
-
-                editSession.setBlocks(selectionwall3, pat);
-            } catch (MaxChangedBlocksException ex) {
-                ex.printStackTrace();
-            }
-            sender.sendMessage("fixed!");
-            return true;
-        }
-        return false;
     }
 
     public boolean isAfk(Player player) {

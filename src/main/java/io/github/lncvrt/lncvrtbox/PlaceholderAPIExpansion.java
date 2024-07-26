@@ -84,7 +84,7 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
             case "afk_staff" -> {
                 int staffAfkCount = 0;
                 for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                    if (p.hasPermission("lncvrtutils.staff") && isAfk(p)) {
+                    if (p.hasPermission("lncvrtbox.staff") && isAfk(p)) {
                         staffAfkCount++;
                     }
                 }
@@ -115,23 +115,17 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
             case "total_joins_formatted" -> {
                 return formatCompact(Bukkit.getOfflinePlayers().length);
             }
-            case "seasontwocountdown" -> {
-                long targetTime = 1719804600L;
-                long currentTime = System.currentTimeMillis() / 1000;
-
-                if (currentTime >= targetTime) {
-                    return "Starting Soon!";
-                } else {
-                    long remainingSeconds = targetTime - currentTime;
-                    return formatTime(remainingSeconds);
-                }
-            }
             case "kdr" -> {
-                int kills = Integer.parseInt(PlaceholderAPI.setPlaceholders(player, "%statistic_player_kills%"));
-                int deaths = Integer.parseInt(PlaceholderAPI.setPlaceholders(player, "%statistic_deaths%"));
+                int kills = getPlayerKills(player);
+                int deaths = getPlayerDeaths(player);
                 double kdr = (deaths == 0) ? kills : (double) kills / deaths;
                 String format = decimalPlaces > 0 ? "0." + repeat("0", decimalPlaces) : "0";
                 return new DecimalFormat(format).format(kdr);
+            }
+            case "playtime" -> {
+                long playtimeTicks = player.getStatistic(org.bukkit.Statistic.PLAY_ONE_MINUTE);
+                long playtimeSeconds = playtimeTicks / 20;
+                return formatTime(playtimeSeconds);
             }
         }
 
@@ -150,7 +144,7 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
     private String formatCompact(int number) {
         DecimalFormat decimalFormat = new DecimalFormat("#.#");
         if (number >= 1_000_000) {
-                return decimalFormat.format(number / 1_000_000.0) + "M";
+            return decimalFormat.format(number / 1_000_000.0) + "M";
         } else if (number >= 1_000) {
             return decimalFormat.format(number / 1_000.0) + "k";
         } else {
@@ -159,8 +153,6 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
     }
 
     private String formatTime(long seconds) {
-        if (seconds <= 0) return "Starting Soon!";
-
         long days = seconds / 86400;
         seconds %= 86400;
         long hours = seconds / 3600;
@@ -169,11 +161,19 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
         seconds %= 60;
 
         StringBuilder formattedTime = new StringBuilder();
-        if (days > 0) formattedTime.append(days).append("d ");
-        if (hours > 0 || days > 0) formattedTime.append(hours).append("h ");
-        if (minutes > 0 || hours > 0 || days > 0) formattedTime.append(minutes).append("m ");
-        if (seconds > 0 || minutes > 0 || hours > 0 || days > 0) formattedTime.append(seconds).append("s");
+        if (days > 0) formattedTime.append(days).append(" days, ");
+        if (hours > 0 || days > 0) formattedTime.append(hours).append(" hours, ");
+        if (minutes > 0 || hours > 0 || days > 0) formattedTime.append(minutes).append(" minutes, ");
+        formattedTime.append(seconds).append(" seconds");
 
         return formattedTime.toString().trim();
+    }
+
+    public int getPlayerKills(Player player) {
+        return player.getStatistic(org.bukkit.Statistic.PLAYER_KILLS);
+    }
+
+    public int getPlayerDeaths(Player player) {
+        return player.getStatistic(org.bukkit.Statistic.DEATHS);
     }
 }

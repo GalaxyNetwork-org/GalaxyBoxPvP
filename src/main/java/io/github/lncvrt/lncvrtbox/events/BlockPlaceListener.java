@@ -1,47 +1,62 @@
 package io.github.lncvrt.lncvrtbox.events;
 
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
+import io.github.lncvrt.lncvrtbox.LncvrtBox;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-
-import static org.bukkit.ChatColor.*;
+import org.geysermc.cumulus.form.CustomForm;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
 public class BlockPlaceListener implements Listener {
+    private final LncvrtBox plugin;
+
+    public BlockPlaceListener(LncvrtBox plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         if (event.getBlockPlaced().getType() == Material.POLISHED_BLACKSTONE_BUTTON) {
             if (event.getItemInHand().hasItemMeta() && event.getItemInHand().getItemMeta().hasDisplayName()) {
-                String displayName = ChatColor.stripColor(event.getItemInHand().getItemMeta().getDisplayName());
+                String displayName = event.getItemInHand().getItemMeta().getDisplayName();
                 if (displayName.equalsIgnoreCase("Coal Fragment")) {
                     event.setCancelled(true);
                 }
             }
-        } else if (event.getBlockPlaced().getType() == Material.FURNACE || event.getBlockPlaced().getType() == Material.FURNACE_MINECART || event.getBlockPlaced().getType() == Material.BLAST_FURNACE) {
+        } else if (event.getBlockPlaced().getType() == Material.FURNACE ||
+                event.getBlockPlaced().getType() == Material.FURNACE_MINECART ||
+                event.getBlockPlaced().getType() == Material.BLAST_FURNACE) {
             Player player = event.getPlayer();
-            String message = String.format("%s%s[TIP]%s%s If you are trying to smelt iron, gold, etc you can use the Smelter Shop. Click %s[HERE]%s to teleport to the smelter shop! (if you are on bedrock, instead of clicking there run %s/warp smelter%s.", GREEN, BOLD, RESET, GREEN, UNDERLINE, GREEN, UNDERLINE, GREEN);
 
-            TextComponent fullMessage;
-            int hereIndex = message.indexOf("[HERE]");
+            if (plugin.geyserApi.isBedrockPlayer(player.getUniqueId())) {
+                FloodgatePlayer floodgatePlayer = plugin.floodgateApi.getPlayer(player.getUniqueId());
+                floodgatePlayer.sendForm(CustomForm.builder()
+                        .title("Smelter Shop")
+                        .label("If you are trying to smelt iron, gold, etc, you can use the Smelter Shop.")
+                        .toggle("Warp to smelter?")
+                        .validResultHandler(response -> {
+                            if (Boolean.TRUE.equals(response.next())) {
+                                player.performCommand("warp smelter");
+                            }
+                        })
+                        .build());
+            } else {
+                Component message = Component.text("[TIP] ", NamedTextColor.GREEN)
+                        .decorate(TextDecoration.BOLD)
+                        .append(Component.text("If you are trying to smelt iron, gold, etc you can use the Smelter Shop. Click ", NamedTextColor.GREEN))
+                        .append(Component.text("[HERE]", NamedTextColor.GREEN)
+                                .decorate(TextDecoration.UNDERLINED)
+                                .clickEvent(ClickEvent.runCommand("/warp smelter")))
+                        .append(Component.text(" to teleport to the smelter shop!", NamedTextColor.GREEN));
 
-            TextComponent clickableHere = new TextComponent("[HERE]");
-            clickableHere.setColor(net.md_5.bungee.api.ChatColor.GREEN);
-            clickableHere.setUnderlined(true);
-            clickableHere.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp smelter"));
-
-            TextComponent[] components = new TextComponent[] {
-                    new TextComponent(message.substring(0, hereIndex)),
-                    clickableHere,
-                    new TextComponent(message.substring(hereIndex + "[HERE]".length()))
-            };
-            fullMessage = new TextComponent(components);
-
-            player.spigot().sendMessage(fullMessage);
+                player.sendMessage(message);
+            }
         }
     }
 }

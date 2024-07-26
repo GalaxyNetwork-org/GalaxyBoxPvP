@@ -1,13 +1,12 @@
 package io.github.lncvrt.lncvrtbox.events;
 
 import io.github.lncvrt.lncvrtbox.LncvrtBox;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityResurrectEvent;
-
-import static org.bukkit.ChatColor.*;
 
 public class EntityResurrectListener implements Listener {
     private final LncvrtBox plugin;
@@ -25,7 +24,7 @@ public class EntityResurrectListener implements Listener {
                     return;
                 }
                 player.setCooldown(Material.TOTEM_OF_UNDYING, 20 * 5);
-                plugin.getServer().broadcastMessage("%s%sLncvrtBox %s%s» %s%s has popped their totem".formatted(GOLD, BOLD, GRAY, BOLD, RESET, player.getName()));
+                plugin.getServer().broadcast(MiniMessage.miniMessage().deserialize("<b><gradient:#FFAA00:#FFFF55>LncvrtBox</gradient></b> <gray>»</gray> " + player.getName() + " has popped their totem"));
             }
         }
     }

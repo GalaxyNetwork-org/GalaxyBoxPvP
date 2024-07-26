@@ -7,6 +7,8 @@ depend:
   - Essentials
   - WorldEdit
   - WorldGuard
+  - Geyser-Spigot
+  - floodgate
 commands:
   autocompress:
     description: Auto compressor
@@ -27,6 +29,9 @@ commands:
   lockchat:
     description: Lockchat
     usage: /lockchat
+  ping:
+    description: Shows your ping
+    usage: /ping [player]
   rules:
     description: Rules
     usage: /rules

@@ -10,6 +10,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.geysermc.floodgate.api.FloodgateApi;
+import org.geysermc.geyser.api.GeyserApi;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -22,45 +24,27 @@ import java.util.*;
 import java.util.logging.Level;
 
 public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor {
-
     public final Map<UUID, Boolean> autoCompressStatus = new HashMap<>();
     public String serverRules;
     public boolean chatLocked = false;
     private Essentials essentials;
     public boolean fixRanTooOften = false;
+    public GeyserApi geyserApi;
+    public FloodgateApi floodgateApi;
 
     @Override
     public void onEnable() {
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            getLogger().warning("PlaceholderAPI not found. Disabling plugin.");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            getLogger().warning("PlaceholderAPI not found. Disabling plugin.");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-        if (Bukkit.getPluginManager().getPlugin("Essentials") == null) {
-            getLogger().warning("Essentials not found. Disabling plugin.");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
+        geyserApi = GeyserApi.api();
+        floodgateApi = FloodgateApi.getInstance();
 
         Plugin essentialsPlugin = Bukkit.getServer().getPluginManager().getPlugin("Essentials");
-        if (essentialsPlugin == null) {
-            getLogger().warning("Essentials not found. Disabling plugin.");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
+        getLogger().info("Essentials detected. Attempting to hook...");
+        if (essentialsPlugin instanceof Essentials) {
+            essentials = (Essentials) essentialsPlugin;
+            getLogger().info("Essentials hooked successfully.");
         } else {
-            getLogger().info("Essentials detected. Attempting to hook...");
-            if (essentialsPlugin instanceof Essentials) {
-                essentials = (Essentials) essentialsPlugin;
-                getLogger().info("Essentials hooked successfully.");
-            }
-            else {
-                getLogger().info("Essentials failed to hook.");
-            }
+            getLogger().info("Essentials failed to hook. Disabling plugin");
+            getServer().getPluginManager().disablePlugin(this);
         }
 
         if (new PlaceholderAPIExpansion().register()) {
@@ -71,7 +55,20 @@ public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor
             return;
         }
 
-        getServer().getPluginManager().registerEvents(new BlockPlaceListener(), this);
+        registerEvents();
+        registerCommands();
+
+        loadAutoCompressStatus();
+        loadServerRules();
+    }
+
+    @Override
+    public void onDisable() {
+        saveAutoCompressStatus();
+    }
+
+    private void registerEvents() {
+        getServer().getPluginManager().registerEvents(new BlockPlaceListener(this), this);
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
         getServer().getPluginManager().registerEvents(new CraftItemListener(), this);
         getServer().getPluginManager().registerEvents(new EntityDamageListener(this), this);
@@ -82,33 +79,26 @@ public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor
         getServer().getPluginManager().registerEvents(new PlayerChatListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerDropItemListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerElytraBoostListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerItemConsumeListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
         getServer().getPluginManager().registerEvents(new PortalCreateListener(), this);
         getServer().getPluginManager().registerEvents(new PrepareAnvilListener(), this);
         getServer().getPluginManager().registerEvents(new PrepareItemEnchantListener(), this);
         getServer().getPluginManager().registerEvents(new ProjectileHitListener(), this);
         getServer().getPluginManager().registerEvents(new SignChangeListener(this), this);
-
         getServer().getPluginManager().registerEvents(this, this);
+    }
 
-        loadAutoCompressStatus();
-        loadServerRules();
+    private void registerCommands() {
         Objects.requireNonNull(getCommand("autocompress")).setExecutor(new Autocompress(this));
         Objects.requireNonNull(getCommand("clearchat")).setExecutor(new Clearchat());
         Objects.requireNonNull(getCommand("fix")).setExecutor(new Fix(this));
         Objects.requireNonNull(getCommand("link")).setExecutor(new Link());
         Objects.requireNonNull(getCommand("lockchat")).setExecutor(new Lockchat(this));
+        Objects.requireNonNull(getCommand("ping")).setExecutor(new Ping(this));
         Objects.requireNonNull(getCommand("rules")).setExecutor(new Rules(this));
         Objects.requireNonNull(getCommand("sky")).setExecutor(new Sky());
-        Objects.requireNonNull(getCommand("Unlink")).setExecutor(new Unlink());
-    }
-
-    @Override
-    public void onDisable() {
-        saveAutoCompressStatus();
+        Objects.requireNonNull(getCommand("unlink")).setExecutor(new Unlink());
     }
 
     public boolean isRestrictedMaterial(Material material) {

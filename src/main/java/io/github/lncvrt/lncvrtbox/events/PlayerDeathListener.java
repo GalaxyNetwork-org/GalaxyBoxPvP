@@ -1,17 +1,13 @@
 package io.github.lncvrt.lncvrtbox.events;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-import static org.bukkit.ChatColor.*;
-
 public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        String suicideMsg = "";
-        if (event.getEntity() == event.getEntity().getKiller()) suicideMsg = "%s (suicide)".formatted(RESET);
-
-        event.setDeathMessage("%s%sLncvrtBox %s%s» %s%s%s".formatted(GOLD, BOLD, GRAY, BOLD, RESET, event.getDeathMessage(), suicideMsg));
+        event.deathMessage(MiniMessage.miniMessage().deserialize("<b><gradient:#FFAA00:#FFFF55>LncvrtBox</gradient></b> <gray>»</gray> " + event.getDeathMessage()));
     }
 }

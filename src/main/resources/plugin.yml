@@ -7,8 +7,6 @@ depend:
   - Essentials
   - WorldEdit
   - WorldGuard
-  - Geyser-Spigot
-  - floodgate
 commands:
   autocompress:
     description: Auto compressor

@@ -10,8 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.geysermc.floodgate.api.FloodgateApi;
-import org.geysermc.geyser.api.GeyserApi;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -29,14 +27,9 @@ public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor
     public boolean chatLocked = false;
     private Essentials essentials;
     public boolean fixRanTooOften = false;
-    public GeyserApi geyserApi;
-    public FloodgateApi floodgateApi;
 
     @Override
     public void onEnable() {
-        geyserApi = GeyserApi.api();
-        floodgateApi = FloodgateApi.getInstance();
-
         Plugin essentialsPlugin = Bukkit.getServer().getPluginManager().getPlugin("Essentials");
         getLogger().info("Essentials detected. Attempting to hook...");
         if (essentialsPlugin instanceof Essentials) {
@@ -68,7 +61,7 @@ public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor
     }
 
     private void registerEvents() {
-        getServer().getPluginManager().registerEvents(new BlockPlaceListener(this), this);
+        getServer().getPluginManager().registerEvents(new BlockPlaceListener(), this);
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
         getServer().getPluginManager().registerEvents(new CraftItemListener(), this);
         getServer().getPluginManager().registerEvents(new EntityDamageListener(this), this);

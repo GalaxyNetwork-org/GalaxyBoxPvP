@@ -1,15 +1,15 @@
-package io.github.lncvrt.lncvrtbox.events;
+package xyz.lncvrt.galaxyboxpvp.events;
 
-import io.github.lncvrt.lncvrtbox.LncvrtBox;
+import xyz.lncvrt.galaxyboxpvp.GalaxyBoxPvP;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 
 public class FurnaceSmeltListener implements Listener {
-    private final LncvrtBox plugin;
+    private final GalaxyBoxPvP plugin;
 
-    public FurnaceSmeltListener(LncvrtBox plugin) {
+    public FurnaceSmeltListener(GalaxyBoxPvP plugin) {
         this.plugin = plugin;
     }
 

@@ -1,4 +1,4 @@
-package io.github.lncvrt.lncvrtbox.commands;
+package xyz.lncvrt.galaxyboxpvp.commands;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

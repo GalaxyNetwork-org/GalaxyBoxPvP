@@ -1,14 +1,14 @@
-package io.github.lncvrt.lncvrtbox.events;
+package xyz.lncvrt.galaxyboxpvp.events;
 
-import io.github.lncvrt.lncvrtbox.LncvrtBox;
+import xyz.lncvrt.galaxyboxpvp.GalaxyBoxPvP;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 
 public class SignChangeListener implements Listener {
-    private final LncvrtBox plugin;
+    private final GalaxyBoxPvP plugin;
 
-    public SignChangeListener(LncvrtBox plugin) {
+    public SignChangeListener(GalaxyBoxPvP plugin) {
         this.plugin = plugin;
     }
 

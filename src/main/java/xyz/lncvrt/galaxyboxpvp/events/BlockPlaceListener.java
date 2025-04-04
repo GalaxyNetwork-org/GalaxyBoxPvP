@@ -1,4 +1,4 @@
-package io.github.lncvrt.lncvrtbox.events;
+package xyz.lncvrt.galaxyboxpvp.events;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;

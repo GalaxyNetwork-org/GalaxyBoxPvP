@@ -1,32 +1,35 @@
-package io.github.lncvrt.lncvrtbox;
+package xyz.lncvrt.galaxyboxpvp;
 
 import com.earth2me.essentials.Essentials;
-import io.github.lncvrt.lncvrtbox.commands.*;
-import io.github.lncvrt.lncvrtbox.events.*;
-import org.bukkit.*;
+import com.earth2me.essentials.User;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.bukkit.inventory.ItemStack;
-
-import org.bukkit.Bukkit;
+import xyz.lncvrt.galaxyboxpvp.commands.Autocompress;
+import xyz.lncvrt.galaxyboxpvp.commands.Sky;
+import xyz.lncvrt.galaxyboxpvp.events.*;
 
 import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.logging.Level;
 
-public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor {
+public final class GalaxyBoxPvP extends JavaPlugin implements Listener, TabExecutor {
     public final Map<UUID, Boolean> autoCompressStatus = new HashMap<>();
     public String serverRules;
-    public boolean chatLocked = false;
     private Essentials essentials;
-    public boolean fixRanTooOften = false;
+    private final PlaceholderAPIExpansion placeholderAPIExpansion = new PlaceholderAPIExpansion();
 
     @Override
     public void onEnable() {
@@ -40,7 +43,7 @@ public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor
             getServer().getPluginManager().disablePlugin(this);
         }
 
-        if (new PlaceholderAPIExpansion().register()) {
+        if (placeholderAPIExpansion.register()) {
             getLogger().info("Successfully registered PlaceholderAPIExpansion!");
         } else {
             getLogger().warning("Failed to register PlaceholderAPIExpansion. Disabling plugin.");
@@ -57,24 +60,19 @@ public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor
 
     @Override
     public void onDisable() {
+        placeholderAPIExpansion.unregister();
         saveAutoCompressStatus();
     }
 
     private void registerEvents() {
-        getServer().getPluginManager().registerEvents(new BlockPlaceListener(), this);
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
+        getServer().getPluginManager().registerEvents(new BlockPlaceListener(), this);
         getServer().getPluginManager().registerEvents(new CraftItemListener(), this);
-        getServer().getPluginManager().registerEvents(new EntityDamageListener(this), this);
         getServer().getPluginManager().registerEvents(new EntityPickupItemListener(this), this);
-        getServer().getPluginManager().registerEvents(new EntityResurrectListener(this), this);
         getServer().getPluginManager().registerEvents(new FurnaceBurnListener(this), this);
         getServer().getPluginManager().registerEvents(new FurnaceSmeltListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerChatListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerDeathListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerDropItemListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerItemConsumeListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-        getServer().getPluginManager().registerEvents(new PortalCreateListener(), this);
         getServer().getPluginManager().registerEvents(new PrepareAnvilListener(), this);
         getServer().getPluginManager().registerEvents(new PrepareItemEnchantListener(), this);
         getServer().getPluginManager().registerEvents(new ProjectileHitListener(), this);
@@ -84,14 +82,7 @@ public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor
 
     private void registerCommands() {
         Objects.requireNonNull(getCommand("autocompress")).setExecutor(new Autocompress(this));
-        Objects.requireNonNull(getCommand("clearchat")).setExecutor(new Clearchat());
-        Objects.requireNonNull(getCommand("fix")).setExecutor(new Fix(this));
-        Objects.requireNonNull(getCommand("link")).setExecutor(new Link());
-        Objects.requireNonNull(getCommand("lockchat")).setExecutor(new Lockchat(this));
-        Objects.requireNonNull(getCommand("ping")).setExecutor(new Ping(this));
-        Objects.requireNonNull(getCommand("rules")).setExecutor(new Rules(this));
         Objects.requireNonNull(getCommand("sky")).setExecutor(new Sky());
-        Objects.requireNonNull(getCommand("unlink")).setExecutor(new Unlink());
     }
 
     public boolean isRestrictedMaterial(Material material) {
@@ -224,13 +215,8 @@ public final class LncvrtBox extends JavaPlugin implements Listener, TabExecutor
         }
     }
 
-    public boolean isAfk(Player player) {
-        com.earth2me.essentials.User user = essentials.getUser(player);
-        return user.isAfk();
-    }
-
     public boolean isMuted(Player player) {
-        com.earth2me.essentials.User user = essentials.getUser(player);
+        User user = essentials.getUser(player);
         return user.isMuted();
     }
 }

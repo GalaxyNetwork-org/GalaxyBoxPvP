@@ -1,6 +1,6 @@
-package io.github.lncvrt.lncvrtbox.commands;
+package xyz.lncvrt.galaxyboxpvp.commands;
 
-import io.github.lncvrt.lncvrtbox.LncvrtBox;
+import xyz.lncvrt.galaxyboxpvp.GalaxyBoxPvP;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,7 +12,7 @@ import java.util.UUID;
 import static org.bukkit.ChatColor.GREEN;
 import static org.bukkit.ChatColor.RED;
 
-public record Autocompress(LncvrtBox plugin) implements CommandExecutor {
+public record Autocompress(GalaxyBoxPvP plugin) implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {

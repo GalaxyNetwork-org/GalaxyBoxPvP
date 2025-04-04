@@ -1,4 +1,4 @@
-package io.github.lncvrt.lncvrtbox.events;
+package xyz.lncvrt.galaxyboxpvp.events;
 
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;

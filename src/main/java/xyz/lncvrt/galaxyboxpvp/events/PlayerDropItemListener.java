@@ -1,15 +1,15 @@
-package io.github.lncvrt.lncvrtbox.events;
+package xyz.lncvrt.galaxyboxpvp.events;
 
-import io.github.lncvrt.lncvrtbox.LncvrtBox;
+import xyz.lncvrt.galaxyboxpvp.GalaxyBoxPvP;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerDropItemEvent;
 
 public class PlayerDropItemListener implements Listener {
-    private final LncvrtBox plugin;
+    private final GalaxyBoxPvP plugin;
 
-    public PlayerDropItemListener(LncvrtBox plugin) {
+    public PlayerDropItemListener(GalaxyBoxPvP plugin) {
         this.plugin = plugin;
     }
 

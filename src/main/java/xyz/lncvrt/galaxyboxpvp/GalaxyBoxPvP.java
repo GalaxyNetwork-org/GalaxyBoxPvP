@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -18,16 +17,18 @@ import xyz.lncvrt.galaxyboxpvp.commands.Autocompress;
 import xyz.lncvrt.galaxyboxpvp.commands.Sky;
 import xyz.lncvrt.galaxyboxpvp.events.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public final class GalaxyBoxPvP extends JavaPlugin implements Listener, TabExecutor {
+public final class GalaxyBoxPvP extends JavaPlugin implements TabExecutor {
     public final Map<UUID, Boolean> autoCompressStatus = new HashMap<>();
-    public String serverRules;
     private Essentials essentials;
     private final PlaceholderAPIExpansion placeholderAPIExpansion = new PlaceholderAPIExpansion();
 
@@ -55,7 +56,6 @@ public final class GalaxyBoxPvP extends JavaPlugin implements Listener, TabExecu
         registerCommands();
 
         loadAutoCompressStatus();
-        loadServerRules();
     }
 
     @Override
@@ -77,7 +77,6 @@ public final class GalaxyBoxPvP extends JavaPlugin implements Listener, TabExecu
         getServer().getPluginManager().registerEvents(new PrepareItemEnchantListener(), this);
         getServer().getPluginManager().registerEvents(new ProjectileHitListener(), this);
         getServer().getPluginManager().registerEvents(new SignChangeListener(this), this);
-        getServer().getPluginManager().registerEvents(this, this);
     }
 
     private void registerCommands() {
@@ -156,27 +155,6 @@ public final class GalaxyBoxPvP extends JavaPlugin implements Listener, TabExecu
         if (remainingItems > 0) {
             inventory.addItem(new ItemStack(material, remainingItems));
         }
-    }
-
-    public void loadServerRules() {
-        File rulesFile = new File(getDataFolder(), "rules.txt");
-
-        if (!rulesFile.exists()) {
-            getLogger().log(Level.WARNING, "rules.txt file not found in plugin folder.");
-            return;
-        }
-
-        StringBuilder rulesContent = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(rulesFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                rulesContent.append(line).append("\n");
-            }
-        } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "Error reading rules.txt file.", e);
-        }
-
-        serverRules = rulesContent.toString();
     }
 
     @SuppressWarnings("unchecked")

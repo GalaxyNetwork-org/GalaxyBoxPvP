@@ -15,10 +15,7 @@ public class BlockPlaceListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         if (event.getBlockPlaced().getType() == Material.POLISHED_BLACKSTONE_BUTTON) {
             if (event.getItemInHand().hasItemMeta() && event.getItemInHand().getItemMeta().hasDisplayName()) {
-                String displayName = event.getItemInHand().getItemMeta().getDisplayName();
-                if (displayName.equalsIgnoreCase("Coal Fragment")) {
-                    event.setCancelled(true);
-                }
+                event.setCancelled(true); //temp fix
             }
         } else if (event.getBlockPlaced().getType() == Material.FURNACE ||
                 event.getBlockPlaced().getType() == Material.FURNACE_MINECART ||

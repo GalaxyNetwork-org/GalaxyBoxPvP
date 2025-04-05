@@ -106,7 +106,7 @@ public final class GalaxyBoxPvP extends JavaPlugin implements TabExecutor {
         }
     }
 
-    private void convertInventoryItems(Player player, Material fromMaterial, Material toMaterial, int fromCount, int toCount) {
+    private void convertInventoryItems(Player player, Material fromMaterial, Material toMaterial, int fromCount, @SuppressWarnings("SameParameterValue") int toCount) {
         ItemStack[] inventoryContents = player.getInventory().getContents();
 
         Bukkit.getScheduler().runTask(this, () -> {

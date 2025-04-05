@@ -7,6 +7,7 @@ depend:
   - Essentials
   - WorldEdit
   - WorldGuard
+  - BetterTeams
 commands:
   autocompress:
     description: Auto compressor

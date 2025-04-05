@@ -1,6 +1,8 @@
 package xyz.lncvrt.galaxyboxpvp;
 
+import com.booksaw.betterTeams.Team;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.ChatColor;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +45,14 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
                 int kills = player.getStatistic(Statistic.PLAYER_KILLS);
                 int deaths = player.getStatistic(Statistic.DEATHS);
                 return deaths == 0 ? String.valueOf(kills) : String.format("%.1f", (double) kills / deaths);
+            case "team":
+                Team team1 = Team.getTeam(player);
+                if (team1 == null) return "";
+                return ChatColor.translateAlternateColorCodes('&', "%s[%s%s%s%s]%s ".formatted(ChatColor.GRAY, ChatColor.RESET, team1.getDisplayName(), ChatColor.RESET, ChatColor.GRAY, ChatColor.RESET));
+            case "teamname":
+                Team team2 = Team.getTeam(player);
+                if (team2 == null) return "None";
+                return team2.getName();
             default:
                 return null;
         }

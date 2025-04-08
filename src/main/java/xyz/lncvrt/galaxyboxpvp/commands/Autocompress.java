@@ -15,7 +15,7 @@ import static org.bukkit.ChatColor.RED;
 public record Autocompress(GalaxyBoxPvP plugin) implements CommandExecutor {
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull [] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(RED + "This command can only be executed by a player.");
             return true;

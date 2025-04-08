@@ -16,9 +16,6 @@ public class FurnaceSmeltListener implements Listener {
     @EventHandler
     public void onFurnaceSmelt(FurnaceSmeltEvent event) {
         Material smelted = event.getSource().getType();
-
-        if (plugin.isRestrictedMaterial(smelted)) {
-            event.setCancelled(true);
-        }
+        if (plugin.isRestrictedMaterial(smelted)) event.setCancelled(true);
     }
 }

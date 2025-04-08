@@ -2,6 +2,8 @@ package xyz.lncvrt.galaxyboxpvp;
 
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
+import me.confuser.banmanager.common.BanManagerPlugin;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.TabExecutor;
@@ -9,12 +11,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import xyz.lncvrt.galaxyboxpvp.commands.Autocompress;
 import xyz.lncvrt.galaxyboxpvp.commands.Sky;
+import xyz.lncvrt.galaxyboxpvp.commands.Skyrtp;
 import xyz.lncvrt.galaxyboxpvp.events.*;
 
 import java.io.File;
@@ -29,21 +33,12 @@ import java.util.logging.Level;
 
 public final class GalaxyBoxPvP extends JavaPlugin implements TabExecutor {
     public final Map<UUID, Boolean> autoCompressStatus = new HashMap<>();
-    private Essentials essentials;
+    public final Map<UUID, Long> skyRTPDelays = new HashMap<>();
     private final PlaceholderAPIExpansion placeholderAPIExpansion = new PlaceholderAPIExpansion();
+    public final MiniMessage miniMessage = MiniMessage.miniMessage();
 
     @Override
     public void onEnable() {
-        Plugin essentialsPlugin = Bukkit.getServer().getPluginManager().getPlugin("Essentials");
-        getLogger().info("Essentials detected. Attempting to hook...");
-        if (essentialsPlugin instanceof Essentials) {
-            essentials = (Essentials) essentialsPlugin;
-            getLogger().info("Essentials hooked successfully.");
-        } else {
-            getLogger().info("Essentials failed to hook. Disabling plugin");
-            getServer().getPluginManager().disablePlugin(this);
-        }
-
         if (placeholderAPIExpansion.register()) {
             getLogger().info("Successfully registered PlaceholderAPIExpansion!");
         } else {
@@ -65,23 +60,26 @@ public final class GalaxyBoxPvP extends JavaPlugin implements TabExecutor {
     }
 
     private void registerEvents() {
-        getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
-        getServer().getPluginManager().registerEvents(new BlockPlaceListener(), this);
-        getServer().getPluginManager().registerEvents(new CraftItemListener(), this);
-        getServer().getPluginManager().registerEvents(new EntityPickupItemListener(this), this);
-        getServer().getPluginManager().registerEvents(new FurnaceBurnListener(this), this);
-        getServer().getPluginManager().registerEvents(new FurnaceSmeltListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerDropItemListener(this), this);
-        getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-        getServer().getPluginManager().registerEvents(new PrepareAnvilListener(), this);
-        getServer().getPluginManager().registerEvents(new PrepareItemEnchantListener(), this);
-        getServer().getPluginManager().registerEvents(new ProjectileHitListener(), this);
-        getServer().getPluginManager().registerEvents(new SignChangeListener(this), this);
+        PluginManager pluginManager = getServer().getPluginManager();
+        pluginManager.registerEvents(new BlockBreakListener(this), this);
+        pluginManager.registerEvents(new BlockPlaceListener(this), this);
+        pluginManager.registerEvents(new CraftItemListener(), this);
+        pluginManager.registerEvents(new EntityPickupItemListener(this), this);
+        pluginManager.registerEvents(new EntitySpawnListener(), this);
+        pluginManager.registerEvents(new FurnaceBurnListener(this), this);
+        pluginManager.registerEvents(new FurnaceSmeltListener(this), this);
+        pluginManager.registerEvents(new PlayerDropItemListener(this), this);
+        pluginManager.registerEvents(new PlayerJoinListener(this), this);
+        pluginManager.registerEvents(new PlayerMoveListener(), this);
+        pluginManager.registerEvents(new PrepareAnvilListener(), this);
+        pluginManager.registerEvents(new PrepareItemEnchantListener(), this);
+        pluginManager.registerEvents(new SignChangeListener(this), this);
     }
 
     private void registerCommands() {
         Objects.requireNonNull(getCommand("autocompress")).setExecutor(new Autocompress(this));
         Objects.requireNonNull(getCommand("sky")).setExecutor(new Sky());
+        Objects.requireNonNull(getCommand("skyrtp")).setExecutor(new Skyrtp(this));
     }
 
     public boolean isRestrictedMaterial(Material material) {
@@ -194,7 +192,6 @@ public final class GalaxyBoxPvP extends JavaPlugin implements TabExecutor {
     }
 
     public boolean isMuted(Player player) {
-        User user = essentials.getUser(player);
-        return user.isMuted();
+        return BanManagerPlugin.getInstance().getPlayerMuteStorage().isMuted(player.getUniqueId());
     }
 }

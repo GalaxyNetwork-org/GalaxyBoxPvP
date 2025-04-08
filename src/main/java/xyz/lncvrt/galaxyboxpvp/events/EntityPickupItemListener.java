@@ -16,8 +16,6 @@ public class EntityPickupItemListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onItemPickup(EntityPickupItemEvent event) {
-        if (event.getEntity() instanceof Player player) {
-            plugin.convertInventoryItemsPrep(player, player.getUniqueId());
-        }
+        if (event.getEntity() instanceof Player player) plugin.convertInventoryItemsPrep(player, player.getUniqueId());
     }
 }

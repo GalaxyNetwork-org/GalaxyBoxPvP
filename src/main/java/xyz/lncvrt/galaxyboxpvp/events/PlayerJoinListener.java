@@ -22,10 +22,7 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
 
-        if (!plugin.autoCompressStatus.containsKey(playerId)) {
-            plugin.autoCompressStatus.put(playerId, false);
-        }
-
+        if (!plugin.autoCompressStatus.containsKey(playerId)) plugin.autoCompressStatus.put(playerId, false);
         player.sendMessage("%sWelcome to LncvrtBox, %s! This is a PvP arena gamemode that was originally called LncvrtBox, and is almost a year old! We reset the server for GalaxyNetwork and a fresh start".formatted(GREEN, player.getName()));
     }
 }

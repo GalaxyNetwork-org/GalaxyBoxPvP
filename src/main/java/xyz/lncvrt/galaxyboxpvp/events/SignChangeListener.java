@@ -14,8 +14,6 @@ public class SignChangeListener implements Listener {
 
     @EventHandler
     private void onSignPlace(SignChangeEvent event) {
-        if (plugin.isMuted(event.getPlayer())) {
-            event.setCancelled(true);
-        }
+        if (plugin.isMuted(event.getPlayer())) event.setCancelled(true);
     }
 }

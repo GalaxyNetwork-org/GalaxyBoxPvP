@@ -13,3 +13,6 @@ commands:
   sky:
     description: Teleports you to sky world
     usage: /sky
+  skyrtp:
+    description: Teleports you to a random location in sky world
+    usage: /sky

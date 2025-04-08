@@ -20,9 +20,6 @@ public class FurnaceBurnListener implements Listener {
     public void onFurnaceBurn(FurnaceBurnEvent event) {
         Furnace furnace = (Furnace) event.getBlock().getState();
         Material smelting = Objects.requireNonNull(furnace.getInventory().getSmelting()).getType();
-
-        if (plugin.isRestrictedMaterial(smelting)) {
-            event.setCancelled(true);
-        }
+        if (plugin.isRestrictedMaterial(smelting)) event.setCancelled(true);
     }
 }

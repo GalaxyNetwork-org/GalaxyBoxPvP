@@ -37,6 +37,8 @@ public final class PlaceholderAPIExpansion extends PlaceholderExpansion {
     @Override
     public @Nullable String onPlaceholderRequest(Player player, @NotNull String identifier) {
         switch (identifier) {
+            case "hearts":
+                return String.format("%.1f", player.getHealth() / 2);
             case "kills":
                 return String.valueOf(player.getStatistic(Statistic.PLAYER_KILLS));
             case "deaths":

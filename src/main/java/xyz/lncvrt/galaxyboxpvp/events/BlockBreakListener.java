@@ -17,5 +17,8 @@ public class BlockBreakListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         plugin.convertInventoryItemsPrep(player, player.getUniqueId());
+        if (event.getBlock().getLocation().getY() == 100 && event.getBlock().getWorld().getName().equals("world")) {
+            event.setCancelled(true);
+        }
     }
 }

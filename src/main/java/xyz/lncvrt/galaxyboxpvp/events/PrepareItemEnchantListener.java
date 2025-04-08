@@ -10,8 +10,6 @@ public class PrepareItemEnchantListener implements Listener {
     @EventHandler
     public void onPrepareItemEnchant(PrepareItemEnchantEvent event) {
         ItemStack item = event.getItem();
-        if (item.getType() == Material.DIAMOND_PICKAXE || item.getType() == Material.NETHERITE_PICKAXE) {
-            event.setCancelled(true);
-        }
+        if (item.getType() == Material.DIAMOND_PICKAXE || item.getType() == Material.NETHERITE_PICKAXE) event.setCancelled(true);
     }
 }

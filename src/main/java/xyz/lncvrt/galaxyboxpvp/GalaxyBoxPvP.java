@@ -1,7 +1,5 @@
 package xyz.lncvrt.galaxyboxpvp;
 
-import com.earth2me.essentials.Essentials;
-import com.earth2me.essentials.User;
 import me.confuser.banmanager.common.BanManagerPlugin;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -10,7 +8,6 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;

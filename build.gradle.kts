@@ -88,12 +88,8 @@ bukkit {
     main = "$group.${slug}.${rootProject.name}Plugin"
     version = rootProject.version.toString()
     website = "lncvrt.xyz"
-    
-    
-    apiVersion = "1.13"
-    
-    depend = listOf()
-    
+    apiVersion = "1.21"
+    depend = listOf("PlaceholderAPI", "BetterTeams", "BanManager")
     authors = listOf("Lncvrt")
     prefix = rootProject.name
 }

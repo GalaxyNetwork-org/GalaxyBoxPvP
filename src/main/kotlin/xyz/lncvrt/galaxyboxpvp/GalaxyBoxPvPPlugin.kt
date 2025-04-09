@@ -79,7 +79,7 @@ class GalaxyBoxPvPPlugin : JavaPlugin(), TabExecutor {
     }
 
     internal fun convertInventoryItemsPrep(player: Player, playerId: UUID?) {
-        if (autoCompressStatus.getOrDefault(playerId, false) == true) {
+        if (autoCompressStatus[playerId] == true) {
             convertInventoryItems(player, Material.DIAMOND, Material.DIAMOND_BLOCK, 9, 1)
             convertInventoryItems(player, Material.LAPIS_LAZULI, Material.LAPIS_BLOCK, 9, 1)
             convertInventoryItems(player, Material.REDSTONE, Material.REDSTONE_BLOCK, 9, 1)
@@ -90,7 +90,7 @@ class GalaxyBoxPvPPlugin : JavaPlugin(), TabExecutor {
             convertInventoryItems(player, Material.IRON_ORE, Material.IRON_BLOCK, 9, 1)
             convertInventoryItems(player, Material.RAW_IRON, Material.RAW_IRON_BLOCK, 9, 1)
             convertInventoryItems(player, Material.COAL, Material.COAL_BLOCK, 9, 1)
-            convertInventoryItems(player, Material.RAW_COPPER, Material.COPPER_BLOCK, 9, 1)
+            convertInventoryItems(player, Material.RAW_COPPER, Material.RAW_COPPER_BLOCK, 9, 1)
             convertInventoryItems(player, Material.COPPER_INGOT, Material.COPPER_BLOCK, 9, 1)
             convertInventoryItems(player, Material.QUARTZ, Material.QUARTZ_BLOCK, 4, 1)
         }
@@ -172,8 +172,11 @@ class GalaxyBoxPvPPlugin : JavaPlugin(), TabExecutor {
 
     private fun loadAutoCompressStatus() {
         val file = File(dataFolder, "autocompress.json")
+        if (!dataFolder.exists()) {
+            dataFolder.mkdirs()
+        }
         if (!file.exists()) {
-            return
+            file.writeText("[]")
         }
 
         try {

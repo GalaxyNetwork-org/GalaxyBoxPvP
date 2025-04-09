@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package xyz.lncvrt.galaxyboxpvp
 
 import com.booksaw.betterTeams.Team

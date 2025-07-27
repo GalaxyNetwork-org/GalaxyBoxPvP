@@ -4,9 +4,13 @@ package xyz.lncvrt.galaxyboxpvp
 
 import com.booksaw.betterTeams.Team
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.ChatColor
 import org.bukkit.Statistic
 import org.bukkit.entity.Player
+import org.sayandev.stickynote.bukkit.utils.AdventureUtils.legacyColored
+import org.sayandev.stickynote.bukkit.utils.AdventureUtils.legacyString
 import javax.annotation.Nullable
 
 class PlaceholderAPIExpansion : PlaceholderExpansion() {
@@ -44,7 +48,7 @@ class PlaceholderAPIExpansion : PlaceholderExpansion() {
             "team" -> {
                 val team1: Team? = Team.getTeam(player)
                 if (team1 == null) return ""
-                return "%s[%s%s%s%s]%s ".format(ChatColor.GRAY, ChatColor.RESET, team1.displayName, ChatColor.RESET, ChatColor.GRAY, ChatColor.RESET)
+                return LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize("<gray>[</gray>%s<gray>]</gray>".format(team1.displayName)))
             }
             "teamname" -> {
                 val team2: Team? = Team.getTeam(player)

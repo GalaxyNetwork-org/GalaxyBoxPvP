@@ -31,7 +31,7 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.6")
-    compileOnly("com.github.booksaw:BetterTeams:4.11.0")
+    compileOnly("com.github.booksaw:BetterTeams:4.13.4")
     compileOnly("me.confuser.banmanager:BanManagerCommon:7.9.0")
 }
 

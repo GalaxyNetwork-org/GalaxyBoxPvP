@@ -9,6 +9,6 @@ pluginManagement {
 }
 
 plugins {
-    id("org.sayandev.stickynote.settings") version "1.10.4.41"}
+    id("org.sayandev.stickynote.settings") version "1.10.4.45"}
 
 rootProject.name = "GalaxyBoxPvP"
